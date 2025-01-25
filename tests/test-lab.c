@@ -234,6 +234,105 @@ void test_notInList(void)
     free(data);
 }
 
+void test_emptyListRemove(void)
+{
+    // Attempt to remove from an empty list
+    void *rval = list_remove_index(lst_, 0);
+    TEST_ASSERT_TRUE(rval == NULL);
+    TEST_ASSERT_TRUE(lst_->size == 0);
+}
+
+void test_addRemoveConsistency(void)
+{
+    // Add and remove multiple elements in sequence
+    for (int i = 0; i < 10; i++) {
+        list_add(lst_, alloc_data(i));
+    }
+    TEST_ASSERT_TRUE(lst_->size == 10);
+
+    for (int i = 9; i >= 0; i--) {
+        int *rval = (int *)list_remove_index(lst_, 0);
+        TEST_ASSERT_TRUE(*rval == i);
+        free(rval);
+    }
+
+    // Ensure the list is empty and valid
+    TEST_ASSERT_TRUE(lst_->size == 0);
+    TEST_ASSERT_TRUE(lst_->head->next == lst_->head->prev);
+}
+
+void test_circularIntegrity(void)
+{
+    populate_list();
+
+    // Validate circular structure
+    node_t *head = lst_->head;
+    node_t *curr = head->next;
+
+    // Traverse the list and verify next links
+    for (size_t i = 0; i < lst_->size; i++) {
+        TEST_ASSERT_FALSE(curr == NULL); // No null nodes
+        curr = curr->next;
+    }
+
+    // After traversing, we should be back at the head
+    TEST_ASSERT_TRUE(curr == head);
+
+    // Traverse the list in reverse using prev links
+    curr = head->prev;
+    for (size_t i = 0; i < lst_->size; i++) {
+        TEST_ASSERT_FALSE(curr == NULL); // No null nodes
+        curr = curr->prev;
+    }
+
+    // After traversing in reverse, we should be back at the head
+    TEST_ASSERT_TRUE(curr == head);
+
+    // Add a new node and verify the integrity again
+    list_add(lst_, alloc_data(42));
+    TEST_ASSERT_TRUE(lst_->size == 6);
+
+    curr = head->next;
+    for (size_t i = 0; i < lst_->size; i++) {
+        TEST_ASSERT_FALSE(curr == NULL);
+        curr = curr->next;
+    }
+    TEST_ASSERT_TRUE(curr == head);
+
+    curr = head->prev;
+    for (size_t i = 0; i < lst_->size; i++) {
+        TEST_ASSERT_FALSE(curr == NULL);
+        curr = curr->prev;
+    }
+    TEST_ASSERT_TRUE(curr == head);
+
+    // Clean up: Remove all elements from the list to free allocated memory
+    while (lst_->size > 0) {
+        int *rval = (int *)list_remove_index(lst_, 0);
+        free(rval);
+    }
+
+    // Verify list is empty and circular structure is intact
+    TEST_ASSERT_TRUE(lst_->size == 0);
+    TEST_ASSERT_TRUE(lst_->head->next == lst_->head->prev);
+}
+
+void test_addNullData(void)
+{
+    // Attempt to add a NULL element
+    list_add(lst_, NULL);
+    TEST_ASSERT_TRUE(lst_->size == 1);
+
+    // Verify that NULL data exists in the list (I guess we'll allow NULL data .... IDK sure why not)
+    TEST_ASSERT_TRUE(lst_->head->next->data == NULL);
+
+    // Remove the NULL element
+    void *rval = list_remove_index(lst_, 0);
+    TEST_ASSERT_TRUE(rval == NULL);
+    TEST_ASSERT_TRUE(lst_->size == 0);
+}
+
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -248,5 +347,10 @@ int main(void)
     RUN_TEST(test_indexOf0);
     RUN_TEST(test_indexOf3);
     RUN_TEST(test_notInList);
+    // My 4 tests:
+    RUN_TEST(test_emptyListRemove);
+    RUN_TEST(test_addRemoveConsistency);
+    RUN_TEST(test_circularIntegrity);
+    RUN_TEST(test_addNullData);
     return UNITY_END();
 }
