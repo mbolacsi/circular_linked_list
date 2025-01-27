@@ -1,6 +1,7 @@
-# Makefile Project Template
+# Circular Linked List
 
-Steps to configure, build, run, and test the project.
+## Overview
+This project is a simple implementation of a circular linked list with a sentinel node. It provides basic functionality for creating, managing, and manipulating a linked list. 
 
 ## Building
 
@@ -18,12 +19,4 @@ make check
 
 ```bash
 make clean
-```
-
-## Install Dependencies
-
-In order to use git send-mail you need to run the following command:
-
-```bash
-make install-deps
 ```
