@@ -16,7 +16,7 @@
 list_t *list_init(void (*destroy_data)(void *),
                   int (*compare_to)(const void *, const void *)) {
 
-    // Allocate memory... Hopefully we have enough... it really suck if we... ran out
+    // Allocate memory... Hopefully we have enough... it'd really suck if we... ran out
     list_t *list = (list_t *)malloc(sizeof(list_t));
     if (!list) {
         return NULL;  // fuck we ran out
@@ -171,7 +171,7 @@ int list_indexof(list_t *list, void *data) {
         return -1; // Sad error noises
     }
 
-   // If you wanna go somewhere, you have to know where you are first.... otherwise you're kinda fucked, so simply point at where you are... hopefully the computer will understand.
+   // Pointing at yourself  is fun!!! and the best part is no one thinks you are crazy.
     node_t *current = list->head->next; 
     size_t index = 0;
 
